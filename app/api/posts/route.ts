@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { auth } from '@/auth'
+import { NextResponse } from 'next/server'
 
 type CreatePostInput = {
   title: string
@@ -41,10 +42,18 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  const posts = await prisma.post.findMany({
-    include: {
-      author: true,
-    },
-  })
-  return Response.json(posts)
+  try {
+    const posts = await prisma.post.findMany({
+      include: {
+        author: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+    return NextResponse.json(posts)
+  } catch (error) {
+    console.error('Error fetching posts:', error)
+    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 })
+  }
 }

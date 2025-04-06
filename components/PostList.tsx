@@ -1,16 +1,49 @@
+'use client'
+
 import { Post, User } from '@prisma/client'
-import prisma from '@/lib/prisma'
+import { useEffect, useState } from 'react'
 
 type PostWithAuthor = Post & {
   author: User
 }
 
-export default async function PostList() {
-  const posts = await prisma.post.findMany({
-    include: {
-      author: true,
-    },
-  })
+export default function PostList() {
+  const [posts, setPosts] = useState<PostWithAuthor[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch('/api/posts')
+      if (!response.ok) {
+        throw new Error('Failed to fetch posts')
+      }
+      const data = await response.json()
+      setPosts(data)
+    } catch (error) {
+      console.error('Error fetching posts:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchPosts()
+
+    // Listen for post creation events
+    const handlePostCreated = () => {
+      fetchPosts()
+    }
+
+    window.addEventListener('postCreated', handlePostCreated)
+
+    return () => {
+      window.removeEventListener('postCreated', handlePostCreated)
+    }
+  }, [])
+
+  if (isLoading) {
+    return <div className="text-center">Loading posts...</div>
+  }
 
   return (
     <div className="space-y-4">

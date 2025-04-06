@@ -27,6 +27,9 @@ export default function PostForm() {
       // Reset form
       setTitle('')
       setContent('')
+
+      // Trigger a custom event to refresh the post list
+      window.dispatchEvent(new CustomEvent('postCreated'))
     } catch (error) {
       console.error('Error creating post:', error)
     } finally {
