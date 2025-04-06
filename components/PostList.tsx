@@ -51,11 +51,11 @@ export default function PostList() {
         <div key={post.id} className="p-4 border rounded-box bg-base-200 border-base-300">
           <h2 className="text-xl font-semibold">{post.title}</h2>
           {post.content && <p className="mt-2">{post.content}</p>}
-          <div className="flex justify-between">
+          <div className="flex flex-col sm:flex-row sm:justify-between">
+            <div className="mt-2 text-sm text-base-content/60">by {post.author.email}</div>
             <div className="mt-2 text-sm text-base-content/60">
               Posted on {new Date(post.createdAt).toLocaleDateString()}
             </div>
-            <div className="mt-2 text-sm text-base-content/60">by {post.author.email}</div>
           </div>
         </div>
       ))}
