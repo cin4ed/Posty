@@ -1,19 +1,16 @@
 import { Post, User } from '@prisma/client'
+import prisma from '@/lib/prisma'
 
 type PostWithAuthor = Post & {
   author: User
 }
 
-async function getPosts() {
-  const res = await fetch('http://localhost:3000/api/posts')
-  if (!res.ok) {
-    throw new Error('Failed to fetch posts')
-  }
-  return res.json()
-}
-
 export default async function PostList() {
-  const posts = await getPosts()
+  const posts = await prisma.post.findMany({
+    include: {
+      author: true,
+    },
+  })
 
   return (
     <div className="space-y-4">
