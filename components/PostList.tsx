@@ -1,14 +1,20 @@
 'use client'
 
-import { Post, User } from '@prisma/client'
+import { Post, User, Like } from '@prisma/client'
 import { useEffect, useState } from 'react'
+import PostListItem from './PostListItem'
+import { SessionProvider } from 'next-auth/react'
 
-type PostWithAuthor = Post & {
+type PostWithAuthorAndLikes = Post & {
   author: User
+  likes: Like[]
+  _count: {
+    likes: number
+  }
 }
 
 export default function PostList() {
-  const [posts, setPosts] = useState<PostWithAuthor[]>([])
+  const [posts, setPosts] = useState<PostWithAuthorAndLikes[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchPosts = async () => {
@@ -26,16 +32,40 @@ export default function PostList() {
     }
   }
 
+  const handleLike = async (postId: string) => {
+    try {
+      const response = await fetch(`/api/posts/${postId}/like`, {
+        method: 'POST',
+      })
+      if (response.ok) {
+        fetchPosts()
+      }
+    } catch (error) {
+      console.error('Error liking post:', error)
+    }
+  }
+
+  const handleUnlike = async (postId: string) => {
+    try {
+      const response = await fetch(`/api/posts/${postId}/like`, {
+        method: 'DELETE',
+      })
+      if (response.ok) {
+        fetchPosts()
+      }
+    } catch (error) {
+      console.error('Error unliking post:', error)
+    }
+  }
+
   useEffect(() => {
     fetchPosts()
 
-    // Listen for post creation events
     const handlePostCreated = () => {
       fetchPosts()
     }
 
     window.addEventListener('postCreated', handlePostCreated)
-
     return () => {
       window.removeEventListener('postCreated', handlePostCreated)
     }
@@ -46,19 +76,12 @@ export default function PostList() {
   }
 
   return (
-    <div className="space-y-4">
-      {posts.map((post: PostWithAuthor) => (
-        <div key={post.id} className="p-4 border rounded-box bg-base-200 border-base-300">
-          <h2 className="text-xl font-semibold">{post.title}</h2>
-          {post.content && <p className="mt-2">{post.content}</p>}
-          <div className="flex flex-col sm:flex-row sm:justify-between">
-            <div className="mt-2 text-sm text-base-content/60">by {post.author.email}</div>
-            <div className="mt-2 text-sm text-base-content/60">
-              Posted on {new Date(post.createdAt).toLocaleDateString()}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+    <SessionProvider>
+      <div className="space-y-4">
+        {posts.map((post) => (
+          <PostListItem key={post.id} post={post} onLike={handleLike} onUnlike={handleUnlike} />
+        ))}
+      </div>
+    </SessionProvider>
   )
 }

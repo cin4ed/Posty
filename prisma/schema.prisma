@@ -17,6 +17,7 @@ model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   email String @unique
   posts Post[]
+  likes Like[]
 
   @@map("users")
 }
@@ -29,6 +30,18 @@ model Post {
   updatedAt DateTime @updatedAt
   author User @relation(fields: [authorId], references: [id])
   authorId String @db.ObjectId
+  likes Like[]
   
   @@map("posts")
+}
+
+model Like {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  postId String @db.ObjectId
+  post Post @relation(fields: [postId], references: [id])
+  authorId String @db.ObjectId
+  author User @relation(fields: [authorId], references: [id])
+
+  @@unique([postId, authorId])
+  @@map("likes")
 }

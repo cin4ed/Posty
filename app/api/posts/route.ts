@@ -46,11 +46,18 @@ export async function GET() {
     const posts = await prisma.post.findMany({
       include: {
         author: true,
+        likes: true,
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
     })
+
     return NextResponse.json(posts)
   } catch (error) {
     console.error('Error fetching posts:', error)
