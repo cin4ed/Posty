@@ -10,7 +10,7 @@ export default function SignIn({ className }: { className?: string }) {
         await signIn('resend', formData)
       }}
     >
-      <input className="input input-bordered w-full max-w-xs" type="email" name="email" placeholder="Email" />
+      <input required className="input input-bordered w-full max-w-xs" type="email" name="email" placeholder="Email" />
       <button className="btn btn-primary" type="submit">
         Sign in
       </button>
