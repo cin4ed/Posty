@@ -16,14 +16,12 @@ export default function LoginPage() {
     try {
       const result = await signIn('resend', {
         email,
-        redirect: false,
+        redirect: true,
+        callbackUrl: '/',
       })
 
       if (result?.error) {
         setError('Failed to send magic link. Please try again.')
-      } else {
-        // Show success message
-        alert('Magic link sent! Check your email.')
       }
     } catch {
       setError('An error occurred. Please try again.')
