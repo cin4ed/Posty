@@ -1,5 +1,4 @@
 import { auth } from '@/auth'
-import Header from '@/components/Header'
 import PostForm from '@/components/PostForm'
 import PostList from '@/components/PostList'
 
@@ -8,7 +7,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header user={session?.user} />
       <main className="flex-1 container mx-auto p-4">
         {session?.user ? (
           <div className="max-w-2xl mx-auto space-y-4">

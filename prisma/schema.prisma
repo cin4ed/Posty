@@ -13,9 +13,16 @@ datasource db {
   url      = env("MONGODB_URL")
 }
 
+enum SubscriptionStatus {
+  FREE
+  PLUS
+}
+
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   email String @unique
+  subscription SubscriptionStatus @default(FREE)
+  priceId String?
   posts Post[]
   likes Like[]
 

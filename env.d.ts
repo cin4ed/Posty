@@ -4,5 +4,7 @@ declare namespace NodeJS {
     MONGODB_URL: string
     AUTH_RESEND_KEY: string
     AUTH_RESEND_FROM: string
+    STRIPE_SECRET_KEY: string
+    STRIPE_WEBHOOK_SECRET: string
   }
 }
